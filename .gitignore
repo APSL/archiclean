@@ -1,0 +1,5 @@
+com
+.hg
+.hgignore
+*.pyc
+*.egg-info
