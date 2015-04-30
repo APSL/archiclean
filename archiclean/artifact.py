@@ -6,6 +6,7 @@ import os
 from functools import total_ordering
 from datetime import datetime
 from distutils.version import LooseVersion as V
+from itertools import chain
 
 
 @total_ordering
@@ -43,12 +44,22 @@ class FileArtifactVersion(object):
         return self.name == other.name
 
     def __gt__(self, other):
-        """Consideramos mayor o menor segun nombre de version"""
-        if V(self.name) > V(other.name) and self.mtime.date() < other.mtime.date():
-            print "WARN:{} {} {} / {} {} {}".format(
-                    self.basepath, self.name, self.mtime, other.basepath, other.name, other.mtime)
-            #import ipdb;ipdb.set_trace()
-        return V(self.name) > V(other.name)
+        """ All version ordering stuff here
+        Compare versions by version name, accoding to distutils.version
+        exception: if we have year based and number based releases,
+           we use filesystem mtime to compare.
+        """
+        if self.is_year_based != other.is_year_based:
+            #comparing number and year based versions
+            return self.mtime > other.mtime
+        else:
+            # both versions are same type (number or year scheme)
+            return V(self.name) > V(other.name)
+
+    @property
+    def is_year_based(self):
+        """True if version has a year schema. ex: 2013.02"""
+        return int(V(self.name).version[0]) >= 2000
 
     @staticmethod
     def is_valid_version(version):
@@ -77,6 +88,10 @@ class FileArtifact(object):
     def snapshots(self):
         return self._snapshots
 
+    @property
+    def versions(self):
+        return chain(self.releases, self.snapshots)
+
     def __repr__(self):
         return 'Artifact ({})'.format(self.path)
 
@@ -92,6 +107,15 @@ class FileArtifact(object):
 
     def clean_snapshots(self, keep=2):
         self._snapshots = self._snapshots[-keep:]
+
+    @property
+    def has_number_and_year_releases(self):
+        """True if mixes number and year releases"""
+        number = len([r for r in self.releases if not r.is_year_based])
+        year = len([r for r in self.releases if r.is_year_based])
+        if year + number != len(self.releases):
+            raise Exception("Error calculating year based releases")
+        return year > 0 and number > 0
 
     @classmethod
     def from_path(cls, path, dirnames=[], filenames=[]):
