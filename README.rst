@@ -3,7 +3,7 @@ Archiclean
 ==========
 
 Archiva repos cleaning and exporting tool.
-This tool implements a version ordering oriented to solve a custom release problem: 
+This tool implements a version ordering oriented to solve our custom release problem: 
 mixing *number-based* an *year-based* version naming schemes on artifacts.
 
 usage:
