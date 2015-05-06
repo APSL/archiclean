@@ -6,6 +6,7 @@ import click
 import sys
 from archiclean.importer import FileImporter
 from archiclean.exporter import FileExporter
+from archiclean.formatter import table_format
 
 
 def cleaned_artifacts(importer, keep=2):
@@ -57,6 +58,15 @@ def list(from_path):
     importer = FileImporter(from_path=from_path)
     for artifact in artifact_tester(importer):
         print artifact
+
+
+@main.command()
+@click.argument('from_path', type=click.Path(exists=True))
+def list_warnings(from_path):
+    """Lists mixed artifact releases and snapshots"""
+    importer = FileImporter(from_path=from_path)
+    artifacts = (a for a in importer if a.has_number_and_year_releases)
+    print table_format(artifacts)
 
 
 if __name__ == '__main__':

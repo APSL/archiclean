@@ -25,6 +25,7 @@ setup(
     },
     install_requires=[
         'click',
+        'texttable',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

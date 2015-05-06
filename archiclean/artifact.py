@@ -92,12 +92,16 @@ class FileArtifact(object):
     def versions(self):
         return chain(self.releases, self.snapshots)
 
+    @property
+    def name(self):
+        return self.path
+
     def __repr__(self):
         return 'Artifact ({})'.format(self.path)
 
     def __str__(self):
         return 'Artifact ({})\n  |-releas-> * {}\n  |-snaps--> * {}'.format(
-                self.path,
+                self.name,
                 '\n             * '.join(str(v) for v in self.releases),
                 '\n             * '.join(str(v) for v in self.snapshots)
         )
