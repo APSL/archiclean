@@ -6,9 +6,9 @@ from texttable import Texttable
 from os.path import basename, dirname
 
 
-def table_format(artifacts):
+def table_format(artifacts, cols=0):
     """Formats an artifact"""
-    table = Texttable(max_width=0)
+    table = Texttable(max_width=cols)
     table.header(['Group (dir)', 'Artifact', 'Releases', '', 'Snapshots', ''])
     #table.set_cols_align(["l", "l", "l", "l"])
     #table.set_cols_valign(["t", "t", "t", "t"])

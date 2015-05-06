@@ -49,12 +49,11 @@ class FileArtifactVersion(object):
         exception: if we have year based and number based releases,
            we use filesystem mtime to compare.
         """
-        if self.is_year_based != other.is_year_based:
-            #comparing number and year based versions
-            return self.mtime > other.mtime
-        else:
-            # both versions are same type (number or year scheme)
+        if self.is_year_based == other.is_year_based \
+                or self.mtime.date() == other.mtime.date():
             return V(self.name) > V(other.name)
+        else:
+            return self.mtime.date() > other.mtime.date()
 
     @property
     def is_year_based(self):

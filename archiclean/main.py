@@ -13,8 +13,7 @@ def cleaned_artifacts(importer, keep=2):
     """Yield artifacts with cleaned versions"""
     for artifact in importer:
         if artifact.has_number_and_year_releases:
-            print("Warning: year and number based versions: \n{}".format(
-                artifact))
+            print("Warning: year and number based versions: \n")
         artifact.clean_releases(keep=keep)
         artifact.clean_snapshots(keep=keep)
         yield artifact
@@ -24,8 +23,7 @@ def artifact_tester(artifacts):
     """iter artifacts, and print warning if number and year mixed schema"""
     for artifact in artifacts:
         if artifact.has_number_and_year_releases:
-            print("Warning: year and number based versions: \n{}".format(
-                artifact))
+            print("Warning: year and number based versions: \n")
         yield artifact
 
 
@@ -62,11 +60,12 @@ def list(from_path):
 
 @main.command()
 @click.argument('from_path', type=click.Path(exists=True))
-def list_warnings(from_path):
+@click.option('--cols', '-c', default=0, help='Column number (width) of table')
+def list_warnings(from_path, cols):
     """Lists mixed artifact releases and snapshots"""
     importer = FileImporter(from_path=from_path)
     artifacts = (a for a in importer if a.has_number_and_year_releases)
-    print table_format(artifacts)
+    print table_format(artifacts, cols=cols)
 
 
 if __name__ == '__main__':
